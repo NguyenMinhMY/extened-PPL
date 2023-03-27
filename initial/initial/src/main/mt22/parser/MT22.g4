@@ -14,7 +14,8 @@ mptype: INTTYPE | VOIDTYPE ;
 
 body: funcall SEMI;
 
-exp: funcall | INTLIT ;
+exp: exp ADD exp1 | exp1;
+exp1: LB exp RB | funcall | INTLIT | FLOATLIT;
 
 funcall: ID LB exp? RB ;
 
@@ -25,6 +26,17 @@ VOIDTYPE: 'void'  ;
 ID: [a-zA-Z]+ ;
 
 INTLIT: [0-9]+;
+FLOATLIT: INTLIT DECPART EXPPART {
+self.text = self.text.replace("_", "");
+} | INTLIT DECPART {
+self.text = self.text.replace("_", "");
+}| INTLIT EXPPART  {
+self.text = self.text.replace("_", "");
+}| DECPART EXPPART;
+fragment DECPART: '.' [0-9]*;
+fragment EXPPART: [eE] [-+]? [0-9]+ ;
+
+ADD: '+';
 
 LB: '(' ;
 

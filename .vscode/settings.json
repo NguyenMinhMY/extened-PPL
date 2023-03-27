@@ -1,0 +1,8 @@
+{
+    "python.analysis.extraPaths": [
+        "./initial/initial/target",
+        "./initial/initial/src/main/mt22/utils",
+        "./initial/initial/src/main/mt22/checker",
+        "./initial/initial/src/test"
+    ]
+}

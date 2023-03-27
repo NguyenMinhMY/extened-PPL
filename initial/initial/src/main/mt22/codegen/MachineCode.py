@@ -7,6 +7,8 @@
 '''
 from abc import ABC, abstractmethod, ABCMeta
 
+from main.mt22.codegen.CodeGenError import IllegalOperandException
+
 class MachineCode(ABC):
     @abstractmethod
     def emitPUSHNULL(self):

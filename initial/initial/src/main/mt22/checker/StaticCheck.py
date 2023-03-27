@@ -57,5 +57,7 @@ class StaticChecker(BaseVisitor,Utils):
 
     def visitIntegerLit(self,ast, c): 
         return IntegerType()
+    def visitFloatLit(self,ast,c):
+        return FloatType()
     
 

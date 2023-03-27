@@ -20,7 +20,8 @@ class CodeGenerator(Utils):
     def init(self):
         return [Symbol("getInt", MType(list(), IntegerType()), CName(self.libName)),
                     Symbol("putInt", MType([IntegerType()], VoidType()), CName(self.libName)),
-                    Symbol("putIntLn", MType([IntegerType()], VoidType()), CName(self.libName))
+                    Symbol("putIntLn", MType([IntegerType()], VoidType()), CName(self.libName)),
+                    Symbol("putFloat", MType([FloatType()], VoidType()), CName(self.libName))
                     
                     ]
 
@@ -169,7 +170,7 @@ class CodeGenVisitor(BaseVisitor, Utils):
     def visitFuncCall(self, ast, o):
         #ast: FuncCall
         #o: Any
-
+        # Symbol("putFloat", MType([FloatType()], VoidType()), CName(self.libName)
         ctxt = o
         frame = ctxt.frame
         nenv = ctxt.sym
@@ -192,5 +193,70 @@ class CodeGenVisitor(BaseVisitor, Utils):
         ctxt = o
         frame = ctxt.frame
         return self.emit.emitPUSHICONST(ast.val, frame), IntegerType()
+    def visitFloatLit(self, ast, o):
+        #ast: FloatLiteral
+        ctxt = o
+        frame = ctxt.frame
+        return self.emit.emitPUSHFCONST(str(ast.val), frame), FloatType()
+    
+    # def visitBinExpr(self, ast, o):
+    #     # ast: BinExpr
+    #     # o: any
+    #     ctxt = o
+        
+    #     lexem = ast.op
+    #     left = ast.left
+    #     right = ast.right
+    #     str_left, typ_left = self.visit(left,ctxt)
 
+    #     str_right, typ_right = self.visit(right,ctxt)
+    #     if type(typ_left) is FloatType or type(typ_right) is FloatType:
+    #         self.emit.printout(str_left)
+    #         if type(typ_left) is IntegerType:
+    #             str_i2f = self.emit.emitI2F(ctxt.frame)
+    #             self.emit.printout(str_i2f)
+
+    #         self.emit.printout(str_right)
+    #         if type(typ_right) is IntegerType:
+    #             str_i2f = self.emit.emitI2F(ctxt.frame)
+    #             self.emit.printout(str_i2f)
+    #         return self.emit.emitADDOP(lexem, FloatType(), ctxt.frame), FloatType()    
+    #     else:
+    #         self.emit.printout(str_left)
+    #         self.emit.printout(str_right)
+    #         return self.emit.emitADDOP(lexem, IntegerType(),ctxt.frame), IntegerType()
+
+
+        
+    def visitBinExpr(self, ast, o):
+        #o: Any
+        ctxt = o
+        frame = ctxt.frame
+
+        isLeftFloat = isRightFloat = 0
+
+        op = ast.op
+        left = ast.left
+        right = ast.right
+
+        lStr, lType = self.visit(left, ctxt)
+        if type(lType) is FloatType: isLeftFloat = 1
+        rStr, rType = self.visit(right, ctxt )
+        if type(rType) is FloatType: isRightFloat = 1
+
+        self.emit.printout(lStr)
+        if isLeftFloat == 0 and isRightFloat == 1:
+            tmp = self.emit.emitI2F( frame )
+            self.emit.printout(tmp)
+
+        self.emit.printout(rStr)
+        if isRightFloat == 0 and isLeftFloat == 1:
+            tmp = self.emit.emitI2F( frame )
+            self.emit.printout(tmp)
+
+
+        if isLeftFloat or isRightFloat :
+            return self.emit.emitADDOP(op, FloatType() ,frame), FloatType()
+
+        return self.emit.emitADDOP(op, IntegerType() ,frame), IntegerType()
     
